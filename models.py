@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.nn.utils.rnn import pad_sequence
 import torch.optim as optim
 from torch.utils.data import DataLoader
 import torchvision
@@ -200,6 +201,36 @@ class CustomObjectDetector:
         print(f'Training Done. '
               f'Best weights: Validation loss: {self.best_val_loss} on epoch: {best_model_stats["best_epoch"]}.')
         return losses['training_losses'], losses['validation_losses']
+
+    def load_model(self, model_path):
+        self.model.load_state_dict(torch.load(f=model_path))
+        print(f'Model loaded from {model_path}')
+
+    def test_images(self, num_images=1, is_save_img=True):
+        self.model.eval()
+        data_loader = DataLoader(dataset=self.test_data, batch_size=num_images, shuffle=True)
+        viz_path = DataUtils.create_custom_dir(directory_path='test_results\\test_viz')
+        for images, labels, box_data in data_loader:
+            images = images.to(self.device)
+            img_h, img_w = images.size()[2:]
+            proposals_final, conf_scores_final, classes_final, confs, out_size = self.model.inference(images,
+                                                                                                      conf_thresh=0.95,
+                                                                                                      nms_thresh=0.05)
+            if not any(var is None for var in [proposals_final, conf_scores_final, classes_final, confs, out_size]):
+                scale_factor_h, scale_factor_w = img_h // out_size[0], img_w // out_size[1]
+                images = images * 255
+                for i, image in enumerate(images):
+                    proposed_bboxes = [ModelUtils.project_bboxes(proposals_final[i], scale_factor_w,
+                                                                 scale_factor_h, mode='a2p')]
+                    if proposed_bboxes != [None]:
+                        proposed_bboxes = pad_sequence(proposed_bboxes, batch_first=True, padding_value=-1).cpu()
+                        image = image.cpu().permute(1, 2, 0)
+                        #proposed_bboxes = ops.box_convert(proposed_bboxes, in_fmt='xyxy', out_fmt='xywh')
+                        Visualizer.visualize_data(image=image, bboxes=proposed_bboxes[0], is_save_img=is_save_img,
+                                                  viz_path=viz_path)
+                    else:
+                        print('No Pred')
+                break
 
 
 class TwoStageDetector(nn.Module):

@@ -287,6 +287,7 @@ class Visualizer:
         fig, _ = Visualizer._display_bbox(bboxes, fig, ax)
         if is_save_img:
             fig.savefig(os.path.join(DataUtils.get_unique_filename(os.path.join(viz_path, f'image.png'))))
+            print(f'Image saved to : {viz_path}')
         else:
             fig.show()
 

@@ -30,15 +30,13 @@ class CustomDataset(Dataset):
             self.transform_list = self.transform_list + [transforms.Normalize((0,), (255,))]
         self.transform = transforms.Compose(self.transform_list)
 
-    def visualize(self, num_of_image, is_save_img=False):
-        if is_save_img:
-            viz_path = DataUtils.create_custom_dir(directory_path='visualization')
+    def visualize_images(self, num_of_image, is_save_img=False):
+        viz_path = DataUtils.create_custom_dir(directory_path='visualization')
         for idx in range(num_of_image):
             image, labels, bboxes = self.__getitem__(idx=idx)
             image = image * 255
             image = image.permute(1, 2, 0)
-            Visualizer.visualize_data(image=image, bboxes=bboxes, is_save_img=is_save_img, img_num=idx,
-                                      viz_path=viz_path)
+            Visualizer.visualize_data(image=image, bboxes=bboxes, is_save_img=is_save_img, viz_path=viz_path)
 
     def __len__(self):
         return len(self.data['images'])

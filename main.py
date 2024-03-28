@@ -10,8 +10,12 @@ import os
 if __name__ == '__main__':
     torch.cuda.empty_cache()
     # PARAMETERS -------------------------------------------------------------------------------------------------------
-    DATA_PATH = r'C:\Users\Lloyd Acha\Documents\ACHA_Files\Projects\2024\Data'
-    mode = 'test_video'  # train, fine_tune, test_images, test_video
+
+    #LOCAL FILES
+    DATA_PATH = r'\Projects\Data'
+    load_model_path = os.path.join("models", "model_02042024_50e_3336d",
+                                   'best_model.pt')
+
     # Dataset parameters
     image_size = (416, 416)
     normalize = True
@@ -31,16 +35,24 @@ if __name__ == '__main__':
     anc_scales = [2, 4, 6]
     anc_ratios = [0.5, 1, 1.5]
 
-    load_model_path = os.path.join("models", "model_02062024_50e_1500d",
-                                   'best_model - Copy.pt')
+    mode = 'test_images'  # train, fine_tune, test_images
 
-    video_path = r'C:\Users\Lloyd Acha\Documents\ACHA_Files\Projects\2024\Data\Goats_Custom_DS\video'
-    video_name = 'goat_test1.mp4'
-    full_video_path = os.path.join(video_path, video_name)
+    num_test_images = 5
     # -----------------------------------------------------------------------------------------------------------------
-    assert mode in ['train', 'fine_tune', 'test_images', 'test_video']
+    assert mode in ['train', 'fine_tune', 'test_images']
+
+    # we will just use the test_data as the validation data for testing purposes.
     detector = CustomObjectDetector(train_data=train_ds, test_data=test_ds, val_data=test_ds,
                                     early_stopping_patience=early_stopping_patience,
                                     anc_scales=anc_scales,
                                     anc_ratios=anc_ratios)
-    detector.train(epochs=epochs, batch_size=batch_size, learning_rate=learning_rate)
+
+    if mode == 'train':
+        print('Training Triggered.')
+        detector.train(epochs=epochs, batch_size=batch_size, learning_rate=learning_rate)
+    elif mode == 'fine_tune':
+        detector.load_model(model_path=load_model_path)
+        detector.train(epochs=epochs, batch_size=batch_size, learning_rate=learning_rate)
+    elif mode == 'test_images':
+        detector.load_model(model_path=load_model_path)
+        detector.test_images(num_images=num_test_images)
