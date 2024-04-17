@@ -1,12 +1,10 @@
 import torch
-from torchvision import ops
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import Dataset
 import torchvision.transforms as transforms
 
 from utils import DataUtils, Visualizer
 from PIL import Image
-import random
 import os
 
 
