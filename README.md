@@ -1,4 +1,4 @@
-# SIMPLE F-RCNN IMPLEMENTATION FROM SCRATCH
+# Simple F-RCNN Implementation from Scratch
 
 ## 1.0 About
 A simple demonstration on how to implement a <b>Faster Region-Based Convolutional Neural Network (F-RCNN)</b> from scratch using [pytorch](https://pytorch.org/).
