@@ -1,7 +1,7 @@
 # Simple F-RCNN Implementation from Scratch
 
 ## 1.0 About
-A simple demonstration on how to implement a <b>Faster Region-Based Convolutional Neural Network (F-RCNN)</b> from scratch using [pytorch](https://pytorch.org/).
+A simple demonstration on how to implement a <b>Faster Region-Based Convolutional Neural Network (F-RCNN)</b> from scratch using [pytorch](https://pytorch.org/). This is a direct implementation of the [Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks](https://arxiv.org/abs/1506.01497) paper.
 
 <b>Basic summary of what the model does:</b>
 1. Generate region proposals for each image.
